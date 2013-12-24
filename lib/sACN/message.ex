@@ -41,5 +41,24 @@ defmodule SACN.Message do
 # parse(Data) ->
 #   io:format("Unknown sacn data: ~w~n", [Data]).
 
+  def construct(source_name, cid, priority, sequence_number, preview_data, stream_terminated, universe, start_code, data) do
+    pdu_length = 0
+    flag_high = 0
+    frame_pdu_length = 0
+    reserved = 0
+    options_rest = 0
+    dmp_pdu_length = 0
+    property_value_count = 0
+    
+    <<0x0010::[size(16), big], 0x0000::[size(16), big], 0x4153432D45312E3137000000::[size(96), big], 
+    0x7::4, pdu_length::[size(12), big], 
+    0x00000004::[size(32), big], cid::[size(128), big], 
+    flag_high::4, frame_pdu_length::[size(12), big], 0x00000002::[size(32), big], source_name::[size(512), big],
+    priority::8, reserved::[size(16), big], sequence_number::8, preview_data::1, stream_terminated::1, options_rest::6,
+    universe::[size(16), big],
+    0x7::4, dmp_pdu_length::[size(12), big], 0x02, 0xA1, 0x0000::[size(16), big],
+    0x00001::[size(16), big], property_value_count::[size(16), big],
+    start_code::8, data::binary>>
+  end
 end
 
