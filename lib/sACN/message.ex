@@ -20,7 +20,7 @@ defmodule SACN.Message do
               0x00001::[size(16), big], property_value_count::[size(16), big],
               start_code::8, data::binary>>) do
           # PrintableName = lists:filter(fun(X) -> X /= 0 end, binary_to_list(<<SourceName:512/big>>)),
-          {printable_name, _rest} = :binary.split(<<source_name::[size(512), big]>>, [<<0>>])
+          [printable_name, _rest] = :binary.split(<<source_name::[size(512), big]>>, [<<0>>])
           #io:format("Got sacn packet seq:~w, universe:~w, length:~w from ~p~n", [SequenceNumber, Universe, PropertyValueCount, PrintableName]),
           {:sacn, universe, data, preview_data, stream_terminated}
   end
