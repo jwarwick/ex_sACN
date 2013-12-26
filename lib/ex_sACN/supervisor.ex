@@ -10,6 +10,7 @@ defmodule ExSACN.Supervisor do
       # Define workers and child supervisors to be supervised
       # worker(ExSACN.Worker, [])
       worker(ExSACN.Parser, []),
+      worker(ExSACN.Listener, []),
       worker(ExSACN.Sender, []),
     ]
 

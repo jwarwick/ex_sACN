@@ -1,18 +1,34 @@
 defmodule ExSACN.Listener do
+  @moduledoc """
+  GenServer that listens for multicast sACN packets.
+  You must subscribe to a given universe number to receive packets.
+  All packets received are forwarded to `ExSACN.Parser`.
+  """
+
   use GenServer.Behaviour
 
-  @default_universe 1
-
-  def start_link, do: start_link([])
-  def start_link(options) do
-    universe = Keyword.get(options, :universe, @default_universe)
-    :gen_server.start_link(__MODULE__, [universe: universe], [])
+  @doc """
+  Listen for sACN packets multicast to the given universe
+  """
+  def subscribe(universe) do
+    :gen_server.cast(:sacn_listener, {:subscribe, universe})
   end
 
-  def init([universe: universe]) do
+  @doc """
+  Stop listening for sACN packets multicast to the given universe
+  """
+  def unsubscribe(universe) do
+    :gen_server.cast(:sacn_listener, {:unsubscribe, universe})
+  end
+  
+  def start_link, do: start_link([])
+  def start_link(_options) do
+    :gen_server.start_link({:local, :sacn_listener}, __MODULE__, [], [])
+  end
+
+  def init(_args) do
     {:ok, socket} = :gen_udp.open(SACN.port, [:binary, {:active, true}, {:broadcast, true}, {:reuseaddr, true},
                                  {:recbuf, 128000}, {:read_packets, 256}, {:multicast_loop, false}])
-    lc ip inlist get_interfaces(), do: multicast_subscribe(socket, ip, universe)
     {:ok, socket}
   end
 
@@ -32,9 +48,25 @@ defmodule ExSACN.Listener do
     IO.puts "Subscribing #{inspect ipAddress} to universe #{universeNumber} (#{inspect multicastAddr})"
   end
 
-  def handle_info(_msg = {:udp, socket, _ip, _send_port, data}, state) do
+  defp multicast_unsubscribe(socket, ipAddress, universeNumber) do
+    multicastAddr = SACN.ip_from_universe(universeNumber)
+    :ok = :inet.setopts(socket, [{:drop_membership, {multicastAddr, ipAddress}}])
+    IO.puts "Unsubscribing #{inspect ipAddress} to universe #{universeNumber} (#{inspect multicastAddr})"
+  end
+
+  def handle_info(_msg = {:udp, _socket, _ip, _send_port, data}, state) do
     :sacn_parser <- {:sacn_msg, data}
     {:noreply, state}
   end
+
+  def handle_cast({:subscribe, universe}, socket) do
+    lc ip inlist get_interfaces(), do: multicast_subscribe(socket, ip, universe)
+    {:noreply, socket}
+  end
+  def handle_cast({:unsubscribe, universe}, socket) do
+    lc ip inlist get_interfaces(), do: multicast_unsubscribe(socket, ip, universe)
+    {:noreply, socket}
+  end
+
 end
 
