@@ -15,10 +15,17 @@ defmodule ExSACN.Logger do
     ExSACN.Events.unsubscribe(pid) 
   end
 
-  def handle_event(event, event), do: {:ok, event}
-  def handle_event(event, _state) do
+  def init(_args) do
+    {:ok, {[], 0}}
+  end
+
+  def handle_event(event, {event, cnt}), do: {:ok, {event, cnt+1}}
+  def handle_event(event, {_state, cnt}) do
+    if 0 != cnt do
+      IO.puts "Logger: Last message repeated #{cnt} times"
+    end
     IO.puts "Logger: #{inspect event}"
-    {:ok, event}
+    {:ok, {event, 0}}
   end
 end
 
