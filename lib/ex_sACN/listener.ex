@@ -55,7 +55,7 @@ defmodule ExSACN.Listener do
   end
 
   def handle_info(_msg = {:udp, _socket, _ip, _send_port, data}, state) do
-    :sacn_parser <- {:sacn_msg, data}
+    send :sacn_parser, {:sacn_msg, data}
     {:noreply, state}
   end
 
