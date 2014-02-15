@@ -60,11 +60,11 @@ defmodule ExSACN.Listener do
   end
 
   def handle_cast({:subscribe, universe}, socket) do
-    lc ip inlist get_interfaces(), do: multicast_subscribe(socket, ip, universe)
+    Enum.each(get_interfaces(), &multicast_subscribe(socket, &1, universe))
     {:noreply, socket}
   end
   def handle_cast({:unsubscribe, universe}, socket) do
-    lc ip inlist get_interfaces(), do: multicast_unsubscribe(socket, ip, universe)
+    Enum.each(get_interfaces(), &multicast_unsubscribe(socket, &1, universe))
     {:noreply, socket}
   end
 

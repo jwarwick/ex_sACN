@@ -4,7 +4,7 @@ defmodule ExSACN.Mixfile do
   def project do
     [ app: :ex_sACN,
       version: "0.0.1",
-      elixir: "~> 0.12.1-dev",
+      elixir: ">= 0.12.4",
       deps: deps ]
   end
 

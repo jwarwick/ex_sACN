@@ -14,7 +14,7 @@ defmodule ExSACN.Supervisor do
       worker(ExSACN.Sender, []),
     ]
 
-    ExSACN.Events.start_link
+    {:ok, _pid} = ExSACN.Events.start_link
 
     # See http://elixir-lang.org/docs/stable/Supervisor.Behaviour.html
     # for other strategies and supported options

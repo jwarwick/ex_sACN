@@ -2,8 +2,7 @@ defmodule ExSACN.Events do
 
   def start_link(), do: start_link([])
   def start_link(_args) do
-    :gen_event.start_link({:local, :sacn_events})
-    {:ok, []}
+    {:ok, _pid} = :gen_event.start_link({:local, :sacn_events})
   end
 
   def subscribe(handler), do: subscribe(handler, [])
