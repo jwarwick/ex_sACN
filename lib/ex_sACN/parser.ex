@@ -1,9 +1,9 @@
 defmodule ExSACN.Parser do
-  use GenServer.Behaviour
+  use GenServer
 
   def start_link, do: start_link([])
   def start_link(_options) do
-    :gen_server.start_link({:local, :sacn_parser}, __MODULE__, [], [])
+    GenServer.start_link(__MODULE__, [], name: :sacn_parser)
   end
 
   def handle_info({:sacn_msg, data}, state) do

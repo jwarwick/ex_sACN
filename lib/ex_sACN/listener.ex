@@ -5,25 +5,27 @@ defmodule ExSACN.Listener do
   All packets received are forwarded to `ExSACN.Parser`.
   """
 
-  use GenServer.Behaviour
+  use GenServer
+
+  @server_name :sacn_listener
 
   @doc """
   Listen for sACN packets multicast to the given universe
   """
   def subscribe(universe) do
-    :gen_server.cast(:sacn_listener, {:subscribe, universe})
+    GenServer.cast(@server_name, {:subscribe, universe})
   end
 
   @doc """
   Stop listening for sACN packets multicast to the given universe
   """
   def unsubscribe(universe) do
-    :gen_server.cast(:sacn_listener, {:unsubscribe, universe})
+    GenServer.cast(@server_name, {:unsubscribe, universe})
   end
   
   def start_link, do: start_link([])
   def start_link(_options) do
-    :gen_server.start_link({:local, :sacn_listener}, __MODULE__, [], [])
+    GenServer.start_link(__MODULE__, [], name: @server_name)
   end
 
   def init(_args) do

@@ -1,5 +1,5 @@
 defmodule ExSACN.Sender do
-  use GenServer.Behaviour
+  use GenServer
 
   # def send_message(ip_tuple, port, {path, args}) do
   #   data = OSC.Message.construct(path, args)
@@ -7,7 +7,7 @@ defmodule ExSACN.Sender do
   # end
 
   def start_link() do
-    :gen_server.start_link({:local, :sacn_sender}, __MODULE__, [], [])
+    GenServer.start_link(__MODULE__, [], name: :sacn_sender)
   end
 
   def init(_args) do
