@@ -10,7 +10,8 @@ defmodule ExSACN.Mixfile do
 
   # Configuration for the OTP application
   def application do
-    [mod: { ExSACN, [] }]
+    [applications: [:logger],
+     mod: { ExSACN, [] }]
   end
 
   # Returns the list of dependencies in the format:

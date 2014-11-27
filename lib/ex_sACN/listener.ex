@@ -6,6 +6,7 @@ defmodule ExSACN.Listener do
   """
 
   use GenServer
+  require Logger
 
   @server_name :sacn_listener
 
@@ -47,13 +48,13 @@ defmodule ExSACN.Listener do
   defp multicast_subscribe(socket, ipAddress, universeNumber) do
     multicastAddr = SACN.ip_from_universe(universeNumber)
     :ok = :inet.setopts(socket, [{:add_membership, {multicastAddr, ipAddress}}])
-    IO.puts "Subscribing #{inspect ipAddress} to universe #{universeNumber} (#{inspect multicastAddr})"
+    Logger.info "Subscribing #{inspect ipAddress} to universe #{universeNumber} (#{inspect multicastAddr})"
   end
 
   defp multicast_unsubscribe(socket, ipAddress, universeNumber) do
     multicastAddr = SACN.ip_from_universe(universeNumber)
     :ok = :inet.setopts(socket, [{:drop_membership, {multicastAddr, ipAddress}}])
-    IO.puts "Unsubscribing #{inspect ipAddress} to universe #{universeNumber} (#{inspect multicastAddr})"
+    Logger.info "Unsubscribing #{inspect ipAddress} to universe #{universeNumber} (#{inspect multicastAddr})"
   end
 
   def handle_info(_msg = {:udp, _socket, _ip, _send_port, data}, state) do

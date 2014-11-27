@@ -4,6 +4,7 @@ defmodule ExSACN.Logger do
   subscribe to and handle events.
   """
   use GenEvent
+  require Logger
 
   def start_logger do
     pid = {ExSACN.Logger, make_ref}
@@ -22,9 +23,9 @@ defmodule ExSACN.Logger do
   def handle_event(event, {event, cnt}), do: {:ok, {event, cnt+1}}
   def handle_event(event, {_old_event, cnt}) do
     if 0 != cnt do
-      IO.puts "Logger: Last message repeated #{cnt} times"
+      Logger.info "Logger: Last message repeated #{cnt} times"
     end
-    IO.puts "Logger: #{inspect event}"
+    Logger.info "Logger: #{inspect event}"
     {:ok, {event, 0}}
   end
 end
